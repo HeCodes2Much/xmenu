@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+mkdir -p "$XDG_CONFIG_HOME/xdg-xmenu"
+MENU_FILE=$XDG_CONFIG_HOME/xdg-xmenu/menu
+if [ "$1" = "-u" ]; then
+    xdg-menu -t kitty > "$MENU_FILE"
+elif [ -f "$MENU_FILE" ]; then
+    xmenu -rp 5x32 "$@" < "$MENU_FILE" | sh &
+fi

@@ -1,14 +1,14 @@
 static struct Config config = {
 	/* font, separate different fonts with comma */
-	.font = "monospace:size=9,DejaVuSansMono:size=9",
+	.font = "SauceCodePro Nerd Font:size=12,monospace:size=10,DejaVuSansMono:size=10",
 
 	/* colors */
-	.background_color = "#FFFFFF",
-	.foreground_color = "#2E3436",
-	.selbackground_color = "#3584E4",
-	.selforeground_color = "#FFFFFF",
-	.separator_color = "#CDC7C2",
-	.border_color = "#E6E6E6",
+	.background_color = "#282a36",
+	.foreground_color = "#f8f8f2",
+	.selbackground_color = "#44475a",
+	.selforeground_color = "#8be9fd",
+	.separator_color = "#ffb86c",
+	.border_color = "#bd93f9",
 
 	/* sizes in pixels */
 	.width_pixels = 130,        /* minimum width of a menu */
@@ -16,7 +16,7 @@ static struct Config config = {
 	.border_pixels = 1,         /* menu border */
 	.separator_pixels = 3,      /* space around separator */
 	.gap_pixels = 0,            /* gap between menus */
-	.max_items = 0,             /* maximum number of items of a menu, 0 to compute based on monitor height */
+	.max_items = 10,             /* maximum number of items of a menu, 0 to compute based on monitor height */
 
 	/* text alignment, set to LeftAlignment, CenterAlignment or RightAlignment */
 	.alignment = LeftAlignment,

@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+if command -v repomenu &> /dev/null; then
+    REPOMENU=/usr/share/repoclub/menu.ini
+    while IFS= read -r Line; do
+	    Get=$(gsettings get org.therepoclub.repomenu.preferences "$Line")
+	    printf -v "REPOMENU_${Line^^}" '%s' "${Get//\'}"
+    done < $REPOMENU
+fi
+
+opt() {
+	printf "%s %s		%s" "$1" "$2" "$3"
+}
+
+asksetting() {
+    playlist=$@
+    if [[ -z ${playlist} ]];
+    then
+        for Song in $HOME/Music/*; do
+	        if [ -f "$Song" ]; then
+		        Name=${Song##*/}
+		        case $Name in
+			        *.mp3|*.flac|*.wav|.ogg)
+				        options+=${Song##*/}$'\n'
+		        esac
+	        fi
+        done
+    else
+        for Song in $playlist/*; do
+	        if [ -f "$Song" ]; then
+		        Name=${Song##*/}
+		        case $Name in
+			        *.mp3|*.flac|*.wav|*.ogg)
+				        options+=${Song##*/}$'\n'
+		        esac
+	        fi
+        done
+    fi
+    echo -e "Select a song to play.
+
+${options::-1}
+
+$(opt '' 'Close music player' 'Close')" | xmenu -irwp 0x0
+}
+
+LOOPSETTING="true"
+while [ -n "$LOOPSETTING" ]; do
+    CHOICE="$(asksetting $1)"
+    [ -n "$CHOICE" ] || exit
+    unset LOOPSETTING
+    case $CHOICE in
+    *.mp3|*.flac|*.wav|*.ogg)
+        playlist=$@
+        if [[ -z ${playlist} ]];
+        then
+            folder=$HOME/Music
+        else
+            folder=$playlist
+        fi
+        $REPOMENU_MUSICPLAYER "$folder/$CHOICE" &
+        ;;
+    *Close*)
+        pkill ${REPOMENU_MUSICPLAYER%% *} &
+        ;;
+    *)
+        echo "Program terminated." && exit
+        ;;
+    esac
+done

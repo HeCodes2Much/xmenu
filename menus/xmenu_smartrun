@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# -*-coding:utf-8 -*-
+
+asksetting() {
+    options=$(printf '%s\n' ${PATH//:/\/* } | grep "xmenu_" | sed 's|^.*/||g' | awk '!NF || !seen[$0]++')
+    echo -e "Select App to run
+
+$options" | xmenu -rp 5x32 "$@"
+}
+
+LOOPSETTING="true"
+while [ -n "$LOOPSETTING" ]; do
+    CHOICE="$(asksetting)"
+    [ -n "$CHOICE" ] || exit
+    unset LOOPSETTING
+    case $CHOICE in
+    xmenu_*)
+        $CHOICE &
+        ;;
+    *)
+        echo "Program terminated." && exit
+        ;;
+    esac
+done
