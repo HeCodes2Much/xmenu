@@ -1,69 +1,81 @@
 #!/usr/bin/env bash
+# -*-coding:utf-8 -*-
+# Auto updated?
+#   Yes
+#File :
+#   repomenue_music
+#Author:
+#   The-Repo-Club [wayne6324@gmail.com]
+#Github:
+#   https://github.com/The-Repo-Club/
+#
+# Created:
+#   Wed 10 March 2021, 12:34:47 PM [GMT]
+# Modified:
+#   Fri 09 September 2022, 08:19:28 PM [GMT+1]
+#
+# Description:
+#   <Todo>
+#
 
-if command -v repomenu &> /dev/null; then
-    REPOMENU=/usr/share/repoclub/menu.ini
-    while IFS= read -r Line; do
-	    Get=$(gsettings get org.therepoclub.repomenu.preferences "$Line")
-	    printf -v "REPOMENU_${Line^^}" '%s' "${Get//\'}"
-    done < $REPOMENU
+if command -v repomenu &>/dev/null; then
+  REPOMENU=/usr/share/repoclub/menu.ini
+  while IFS= read -r Line; do
+    Get=$(repo-exec "$Line")
+    printf -v "REPOMENU_${Line^^}" '%s' "${Get//\'/}"
+  done <$REPOMENU
 fi
 
-opt() {
-	printf "%s %s		%s" "$1" "$2" "$3"
-}
-
 asksetting() {
-    playlist=$@
-    if [[ -z ${playlist} ]];
-    then
-        for Song in $HOME/Music/*; do
-	        if [ -f "$Song" ]; then
-		        Name=${Song##*/}
-		        case $Name in
-			        *.mp3|*.flac|*.wav|.ogg)
-				        options+=${Song##*/}$'\n'
-		        esac
-	        fi
-        done
-    else
-        for Song in $playlist/*; do
-	        if [ -f "$Song" ]; then
-		        Name=${Song##*/}
-		        case $Name in
-			        *.mp3|*.flac|*.wav|*.ogg)
-				        options+=${Song##*/}$'\n'
-		        esac
-	        fi
-        done
-    fi
-    echo -e "Select a song to play.
-
+  playlist=$@
+  if [[ -z ${playlist} ]]; then
+    for Song in $HOME/Music/*; do
+      if [ -f "$Song" ]; then
+        Name=${Song##*/}
+        case $Name in
+        *.mp3 | *.flac | *.wav | .ogg)
+          options+=${Song##*/}$'\n'
+          ;;
+        esac
+      fi
+    done
+  else
+    for Song in $playlist/*; do
+      if [ -f "$Song" ]; then
+        Name=${Song##*/}
+        case $Name in
+        *.mp3 | *.flac | *.wav | *.ogg)
+          options+=${Song##*/}$'\n'
+          ;;
+        esac
+      fi
+    done
+  fi
+  echo -e ">>h Select a song to play.
 ${options::-1}
-
-$(opt '' 'Close music player' 'Close')" | xmenu -irwp 0x0
+:r Close music player" | xmenu -irwp 0x0
 }
 
 LOOPSETTING="true"
 while [ -n "$LOOPSETTING" ]; do
-    CHOICE="$(asksetting $1)"
-    [ -n "$CHOICE" ] || exit
-    unset LOOPSETTING
-    case $CHOICE in
-    *.mp3|*.flac|*.wav|*.ogg)
-        playlist=$@
-        if [[ -z ${playlist} ]];
-        then
-            folder=$HOME/Music
-        else
-            folder=$playlist
-        fi
-        $REPOMENU_MUSICPLAYER "$folder/$CHOICE" &
-        ;;
-    *Close*)
-        pkill ${REPOMENU_MUSICPLAYER%% *} &
-        ;;
-    *)
-        echo "Program terminated." && exit
-        ;;
-    esac
+  CHOICE="$(asksetting $1)"
+  [ -n "$CHOICE" ] || exit
+  unset LOOPSETTING
+  case $CHOICE in
+  *.mp3 | *.flac | *.wav | *.ogg)
+    playlist=$@
+    if [[ -z ${playlist} ]]; then
+      folder=$HOME/Music
+    else
+      folder=$playlist
+    fi
+    $REPOMENU_MUSICPLAYER "$folder/$CHOICE" &
+    ;;
+  *Close*)
+    pkill ${REPOMENU_MUSICPLAYER%% *} &
+    ;;
+  *)
+    echo "Program terminated." && exit
+    ;;
+  esac
 done
